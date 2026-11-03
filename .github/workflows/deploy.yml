@@ -51,6 +51,23 @@ jobs:
       - name: Configurar Pages
         uses: actions/configure-pages@v5
 
+      - name: Validar a release (capas do catálogo)
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          config = json.load(open('config/app-config.json', encoding='utf-8'))
+          catalogo = json.load(open('data/catalogo.json', encoding='utf-8'))
+          pasta = config['pastaCapas']
+          faltando = [j['id'] + ': ' + pasta + j['capa'] for j in catalogo['jogos']
+                      if not os.path.isfile(pasta + j['capa'])]
+          if faltando:
+              print('::error::Deploy bloqueado: %d capa(s) citada(s) no catálogo não existem em %s' % (len(faltando), pasta))
+              print('
+'.join(faltando))
+              sys.exit(1)
+          print('OK: as %d capas do catálogo existem em %s' % (len(catalogo['jogos']), pasta))
+          PY
+
       - name: Empacotar o site
         uses: actions/upload-pages-artifact@v3
         with:
