@@ -62,8 +62,8 @@ jobs:
                       if not os.path.isfile(pasta + j['capa'])]
           if faltando:
               print('::error::Deploy bloqueado: %d capa(s) citada(s) no catálogo não existem em %s' % (len(faltando), pasta))
-              print('
-'.join(faltando))
+              for capa in faltando:
+                  print(capa)
               sys.exit(1)
           print('OK: as %d capas do catálogo existem em %s' % (len(catalogo['jogos']), pasta))
           PY
